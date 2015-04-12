@@ -45,7 +45,7 @@ module.exports = function( grunt ) {
                 src: [
                     './vendor/bootstrap/dist/css/bootstrap.min.css',
                     './vendor/fontawesome/css/font-awesome.min.css',
-                    './css/centaur.css', // should be ./vendor/teachboost/centaur.css
+                    './vendor/tb-ui-kit/dist/css/build.css',
                     './css/app.css'
                 ],
                 dest: './css/build.css'

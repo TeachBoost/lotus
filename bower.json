@@ -15,6 +15,7 @@
     "typeahead.js": "*",
     "moment": "*",
     "pikaday": "*",
-    "modernizr": "*"
+    "modernizr": "*",
+    "tb-ui-kit": "git@github.com:TeachBoost/ui-kit.git#*"
   }
 }
