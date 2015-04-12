@@ -1,0 +1,20 @@
+{
+  "name": "Lotus",
+  "private": true,
+  "dependencies": {
+    "jquery": "*",
+    "jquery-form": "*",
+    "jquery.scrollTo": "*",
+    "jquery.easing": "*",
+    "bootstrap": "*",
+    "fontawesome": "*",
+    "underscore": "*",
+    "iCheck": "*",
+    "notifyjs": "*",
+    "fastclick": "*",
+    "typeahead.js": "*",
+    "moment": "*",
+    "pikaday": "*",
+    "modernizr": "*"
+  }
+}

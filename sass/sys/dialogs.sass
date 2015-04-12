@@ -1,0 +1,218 @@
+/*!
+ * Overlays, status messages, and alert and confirm dialogs 
+ */
+
+#app-status
+    display: none
+    left: 0
+    position: fixed
+    text-align: center
+    top: 0
+    z-index: 10002
+    font-size: 15px
+    font-weight: bold
+    color: $black
+    font-family: "Trebuchet MS", Helvetica, sans-serif
+    span
+        background-color: #EFC313
+        display: inline-block
+        padding: 6px 12px
+        @include border-bottom-radius(2px)
+        border-bottom: 1px solid #E2B500
+        line-height: 1
+
+#app-working
+    @include border-radius(5px)
+    color: $white
+    display: none
+    font-size: 28px
+    padding: 15px
+    position: fixed
+    z-index: 10005
+    border-bottom: 1px solid #888
+    border-top: 1px solid $black
+    background: #111111 url( '../images/loader-gear.gif' ) 14px 20px no-repeat
+    span
+        display: block
+        padding: 6px 0 6px 48px
+
+#app-working-overlay
+    position: fixed
+    left: 0
+    top: 0
+    width: 100%
+    height: 100%
+    background-color: $black
+    z-index: 10004
+    display: none
+
+#app-alert
+    @include border-radius(5px)
+    background-color: #ccc
+    color: #333
+    display: none
+    padding: 15px
+    position: fixed
+    width: 480px
+    z-index: 10002
+    h1
+        background-color: transparent
+        border-bottom: 1px solid #aaa
+        float: none
+        font-size: 22px
+        margin: 0
+        padding: 0 0 12px
+        text-shadow: none
+    p
+        padding-top: 8px
+        margin-bottom: 15px
+        margin-top: 0
+        color: #333
+        line-height: 150%
+        font-size: 1.2em
+    .app-buttons
+        text-align: right
+        margin-top: 35px
+        a.btn
+            margin-left: 6px
+
+#app-alert-overlay
+    position: fixed
+    left: 0
+    top: 0
+    width: 100%
+    height: 100%
+    background-color: $black
+    z-index: 10001
+    display: none
+
+#app-confirm
+    @include border-radius(5px)
+    background-color: #ccc
+    color: #333
+    display: none
+    padding: 15px
+    position: fixed
+    width: 480px
+    z-index: 10002
+    h1
+        background-color: transparent
+        border-bottom: 1px solid #aaa
+        float: none
+        font-size: 22px
+        margin: 0
+        padding: 0 0 12px
+        text-shadow: none
+    p
+        padding-top: 8px
+        margin-bottom: 15px
+        font-size: 1.2em
+        margin-top: 0
+        color: #333
+        line-height: 150%
+    .app-buttons
+        text-align: right
+        margin-top: 35px
+        a.btn
+            margin-left: 6px
+
+#app-confirm-overlay
+    position: fixed
+    left: 0
+    top: 0
+    width: 100%
+    height: 100%
+    background-color: $black
+    z-index: 10001
+    display: none
+
+#app-working-overlay
+    background: #ccc
+    opacity: 1
+    i
+        display: block
+        font-size: 64px
+        margin: -30px auto 0
+        width: 45px
+        top: 50%
+        height: 54px
+        position: relative
+        line-height: 0
+        vertical-align: middle // @TODO can't use vertical-align with display: block
+        color: #AAA
+        text-shadow: 0 1px 0 #eeeeee, 0 -1px 0 #999999
+
+#app-error-overlay,
+#app-lock-overlay
+    background: #e9e9e9
+    position: fixed
+    z-index: 10001
+    display: table
+    text-align: center
+    width: 100%
+    height: 100%
+
+#app-error-overlay,
+#app-lock-overlay
+    .cell
+        display: table-cell
+        vertical-align: middle
+
+#app-working
+    display: none !important
+
+#app-working-overlay
+    .cell
+        text-align: center
+
+#app-error-overlay,
+#app-lock-overlay,
+#app-working-overlay
+    span
+        text-align: center
+        display: inline-block
+        color: #888
+        padding: 12px 20px
+        font-size: 1.0667em
+        max-width: 60%
+
+#app-error-overlay span,
+#app-working-overlay span
+    background-color: $juniper
+    color: $white
+    font-weight: normal
+
+#app-error-overlay
+    a
+        color: $white
+
+#app-lock-overlay
+    span
+        padding-top: 0
+
+#app-working-overlay
+    span
+        position: relative
+        top: 15px
+
+#system-console
+    background: none
+    border: none
+    position: fixed
+    top: 0
+    left: 0
+    padding: 10px
+    width: 33%
+    p
+        border-radius: 3px
+        margin: 0 0 10px 0
+        padding: 6px 10px
+        &.info
+            color: #777
+            background: #bbb
+        &.warn
+            color: #333
+            background: #d6a70e
+        &.error
+            color: #fff
+            background: #af0d0b

@@ -1,0 +1,162 @@
+body
+    font-size: 16px
+h4
+    font-size: 1.2em
+#logo
+    background: url( ../images/logo-app.png ) 0 0 no-repeat
+
+/* Dropdowns */
+.dropdown-menu
+    font-size: 0.9333em
+
+/* Buttons */
+.btn:focus,
+.btn:active:focus,
+.btn.active:focus,
+.btn.focus,
+.btn:active.focus,
+.btn.active.focus
+    outline: none
+.btn-group.switch-toggle > .btn
+    color: #fff
+.btn
+    .fa
+        top: 0px
+#toggle-autosave
+    position: relative
+    top: -1px
+    margin-left: 8px
+    & > .btn
+        width: 3em
+        i
+            top: 1px
+            position: relative
+#toggle-zoom
+    position: relative
+    top: -1px
+    margin-left: 8px
+.btn-group.switch-toggle > .btn.off
+    text-indent: -9999px
+.btn-group.switch-toggle > .btn.turn-off.active
+    background: $maple
+    border-bottom-color: $maple-dark
+.btn-group.switch-toggle > .btn.inactive
+    text-indent: -10000px
+.btn.yellow
+    text-shadow: 0 1px 0 #aa850b
+.btn.green,
+.btn.blue,
+.btn.yellow,
+.btn.red,
+.btn.gray
+    font-size: 1.1333em
+    padding: 0.1em 1em 0
+    line-height: 2em
+.btn.green.onblack
+    border-bottom: 3px solid #0F520F
+.btn.small
+    padding: 0 0.6em !important
+    font-size: 0.8667em !important
+    line-height: 1.8em
+    .fa
+        font-size: 0.9em
+        top: 0
+section.help > .btn
+    font-size: 1em
+    padding: 0.1em 12px 0
+.top-nav
+    .top-btn
+        font-size: 1em
+        padding: 0 1em
+        height: 36px
+        line-height: 33px
+        &:active
+            margin-bottom: 0
+            height: 34px
+
+/* Forms */
+.form-control
+    font-size: 1em
+.form-horizontal
+    overflow: hidden
+    .control-label
+        text-align: left
+        line-height: 1
+label.with-checkbox
+    display: inline-block
+    font-weight: normal
+    padding-left: 20px
+    text-indent: -13px
+    input
+        width: 13px
+        height: 13px
+        padding: 0
+        margin: 0
+        top: -1px
+        left: -7px
+        vertical-align: middle
+        position: relative
+        *overflow: hidden
+
+/* Next Steps */
+.next-step-item
+    border-left: 4px solid $juniper
+    box-shadow: 0 1px 0 $gray-lighter
+    line-height: 1.4em
+    padding: 8px 0 7px 10px
+    background-color: $aspen
+    list-style: none
+    margin-bottom: 1px
+    @include border-radius(3px)
+    font-size: 0.9em
+    position: relative
+    a
+        color: #333
+    i.checkbox
+        /* 20px */
+        font-size: 1.5384em
+        float: left
+        margin-right: 10px
+        color: #666
+        position: relative
+        top: 1px
+    &.complete
+        border-left-color: #999
+        i
+            color: #ddd
+        a
+            color: #aaa
+    span.round
+        display: inline-block
+        font-size: 0.8667em
+        color: #777
+        line-height: 1.5em
+        background: $aspen-dark
+        padding: 2px 6px
+        white-space: nowrap
+        @include border-radius(2px)
+    span.success
+        display: inline-block
+        background-color: #c0e5c0
+        color: #2ba02b
+    .controls
+        position: absolute
+        top: 9px
+        right: 7px
+        i
+            font-size: 1.3em
+            color: #999
+            cursor: pointer
+            &.edit-next-step
+                margin-right: 5px
+    &.w-controls
+        .wrap
+            display: inline-block
+            padding-right: 65px
+
+/* General */
+.md-text
+    font-size: 1em
+kbd
+    background-color: #111
+    font-weight: bold

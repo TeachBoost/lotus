@@ -1,0 +1,82 @@
+///////////////////////////////////////////////////////////////////////////////
+// Usage: @include fa( "\f123" )
+//
+// Avoid SASS interpreting and rendering Font Awesome characters in Unicode.
+
+@mixin content( $char )
+    content: unquote("\"")+unquote(str-insert($char,"\\", 1))+unquote("\"")
+
+// CSS3 **********************************************************************/
+// Vendor prefixing for the following allows support by:
+//     Chrome 10.0+
+//     Firefox 3.6+
+//     Internet Explorer 9+
+//     Opera 12+
+//     Safari 5.1+
+// If support for older browsers is required, simply add the vendor prefixes
+// To the mixins defined below.
+//
+// Usage: @include prefixer(border-radius, $radii, webkit ms spec);
+//
+// Add vendor prefixes as needed
+// Adapted from https://github.com/thoughtbot/bourbon
+
+@mixin prefixer ($property, $value, $prefixes)
+    @each $prefix in $prefixes
+        @if $prefix == webkit
+            -webkit-#{$property}: $value
+
+        @else if $prefix == moz
+            -moz-#{$property}: $value
+
+        @else if $prefix == ms
+            -ms-#{$property}: $value
+
+        @else if $prefix == o
+            -o-#{$property}: $value
+
+        @else if $prefix == spec
+            #{$property}: $value
+
+        @else
+            @warn "Unrecognized prefix: #{$prefix}"
+// Usage: @include border-radius($radii)
+// border-radius no longer requires vendor prefixes.
+@mixin border-radius($radii)
+    @include prefixer(border-radius, $radii, spec)
+
+@mixin border-top-radius($radii)
+    @include prefixer(border-top-left-radius, $radii, spec)
+    @include prefixer(border-top-right-radius, $radii, spec)
+
+@mixin border-bottom-radius($radii)
+    @include prefixer(border-bottom-left-radius, $radii, spec)
+    @include prefixer(border-bottom-right-radius, $radii, spec)
+
+@mixin border-left-radius($radii)
+    @include prefixer(border-top-left-radius, $radii, spec)
+    @include prefixer(border-bottom-left-radius, $radii, spec)
+
+@mixin border-right-radius($radii)
+    @include prefixer(border-top-right-radius, $radii, spec)
+    @include prefixer(border-bottom-right-radius, $radii, spec)
+
+// Usage: @include box-shadow($radii)
+// box-shadow no longer requires vendor prefixes.
+@mixin box-shadow($args...)
+    @include prefixer(box-shadow, $args, spec)
+
+// Usage: @include user-select($radii)
+// user-select
+@mixin user-select($arg)
+    @include prefixer(user-select, $arg, webkit moz ms o spec)
+
+// Usage: @include transition($property, $args)
+// Transitions not supported in IE9 or lower
+@mixin transition($property, $args...)
+    @include prefixer(transition-#{$property}, $args, webkit spec)
+
+// Usage: @include transform($property)
+// IE9 support requires ms prefix
+@mixin transform($properties)
+    @include prefixer(transform, $properties, webkit moz ms o spec)

@@ -1,0 +1,118 @@
+html
+    box-sizing: border-box
+
+*, *:before, *:after
+    box-sizing: inherit
+
+#container
+    height: 100%
+    width: 100%
+
+.hide,
+.hidden
+    display: none !important
+    visibility: hidden
+.invisible
+    visibility: hidden
+.light
+    color: #777
+.round-3
+    @include border-radius(3px)
+.round-4
+    @include border-radius(4px)
+.round-5
+    @include border-radius(5px)
+.round-10
+    @include border-radius(10px)
+.round-top
+    @include border-top-radius(3px)
+.round-bottom
+    @include border-bottom-radius(3px)
+
+// Slider Toggles
+.toggle
+    border: 1px solid #777
+    text-decoration: none
+    position: relative
+    outline: 0
+    span
+        &.left
+            float: left
+            @include border-radius(2px 0 0 2px)
+        &.right
+            float: right
+            @include border-radius(0 2px 2px 0)
+        &.option
+            background-color: #4da74d
+            color: $white
+            padding: 4px 12px
+            height: 22px
+            line-height: 22px
+        &.slider
+            position: absolute
+            top: -1px
+            bottom: -1px
+            right: -1px
+            left: 46%
+    &.left span.slider
+        border-left: 1px solid #333
+
+#subheader
+    .narrow
+        display: none
+    i
+        display: none
+
+span.none
+    color: #a5a5a5
+    background: #e1e1e1
+    line-height: 1.8em
+    display: inline-block
+    padding: 0 0.4em
+    font-size: 0.8667em
+
+// Remove text-shadow in selection highlight: h5bp.com/i
+// These selection rule sets have to be separate.
+// Customize the background color to match your design.
+::-moz-selection
+    background: #b3d4fc
+    text-shadow: none
+
+::selection
+    background: #b3d4fc
+    text-shadow: none
+
+// A better looking default horizontal rule
+hr
+    display: block
+    height: 1px
+    border: 0
+    border-top: 1px solid #ccc
+    margin: 1em 0
+    padding: 0
+
+// Remove the gap between images and the bottom of their
+// containers: h5bp.com/i/440
+img
+    vertical-align: middle
+
+// Remove default fieldset styles.
+fieldset
+    border: 0
+    margin: 0
+    padding: 0
+
+// Allow only vertical resizing of textareas.
+textarea
+    resize: vertical
+
+// Clearfix: contain floats
+.clearfix:before,
+.clearfix:after
+    content: " " // 1
+    display: table // 2
+.clearfix:after
+    clear: both
+// For IE 6/7 only
+.clearfix
+    *zoom: 1
