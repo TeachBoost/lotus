@@ -3,4 +3,5 @@
 .sass-cache
 node_modules
 vendor
-
+js/dist
+css

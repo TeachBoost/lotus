@@ -2,8 +2,38 @@ body
     font-size: 16px
 h4
     font-size: 1.2em
+
 #logo
     background: url( ../images/logo-app.png ) 0 0 no-repeat
+.top-nav
+    margin: 10px 1em 0 0
+.left-nav
+    bottom: 0
+    height: auto
+    > .nav
+        border-right: 1px solid #bbb
+        bottom: 50px
+.left-nav > .nav > .active .item,
+.left-nav > .nav > li:hover .item
+    background: #ddd
+.left-nav > .nav .item
+    font-size: 18px
+    border-bottom: 1px solid #ccc
+.left-nav > .nav .item > .fa
+    font-size: 24px
+.left-nav > .nav .item > span
+    position: relative
+    top: -1px
+section.help
+    border-right: 1px solid #bbb
+    height: 50px
+    bottom: 0
+    &.on
+        > .btn > .fa
+            color: $apple-soft
+    > .btn
+        font-size: 1em
+        padding: 0.1em 12px 0
 
 /* Dropdowns */
 .dropdown-menu
@@ -61,17 +91,24 @@ h4
     .fa
         font-size: 0.9em
         top: 0
-section.help > .btn
-    font-size: 1em
-    padding: 0.1em 12px 0
-.top-nav
-    .top-btn
+
+/* Actions */
+
+#actions
+    position: fixed
+    top: 56px
+    left: 200px
+    right: 0
+    padding: 0.625em 1em
+    background: #f5f5f5
+    border-bottom: 1px solid #ccc
+    .btn
         font-size: 1em
         padding: 0 1em
-        height: 36px
-        line-height: 33px
+        height: 2.25em
+        line-height: 2.25em
         &:active
-            margin-bottom: 0
+            margin-bottom: 2px
             height: 34px
 
 /* Forms */
