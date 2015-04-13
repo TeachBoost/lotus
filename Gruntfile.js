@@ -142,7 +142,12 @@ module.exports = function( grunt ) {
     grunt.registerTask( 'debug', [ 'sass:debug' ] );
     grunt.registerTask( 'js', [ 'concat:js', 'uglify:js' ] );
     grunt.registerTask( 'css', [ 'sass:dev', 'cssmin:minify' ] );
-    grunt.registerTask( 'build', [ 'sass:dev', 'cssmin:minify', 'concat:js', 'uglify:js' ] );
+    grunt.registerTask( 'fonts', [ 'copy:main' ] );
+    grunt.registerTask( 'images', [ 'copy:main' ] );
+    grunt.registerTask( 'build', [
+        'sass:dev', 'cssmin:minify', 'concat:js', 'uglify:js',
+        'jst:compile', 'copy:main'
+    ]);
     // grunt.registerTask( 'test', [ 'sass:test' ] );
 
 };
