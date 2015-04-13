@@ -111,6 +111,22 @@ module.exports = function( grunt ) {
                     './js/app/templates.js': [ './js/app/views/**/*.html' ]
                 }
             }
+        },
+        // Images and Fonts
+        copy: {
+            main: {
+                files: [{
+                    expand: true,
+                    cwd: './vendor/tb-ui-kit/dist/images/',
+                    src: '**',
+                    dest: './images/'
+                }, {
+                    expand: true,
+                    flatten: true,
+                    src: './vendor/fontawesome/fonts/*',
+                    dest: './fonts/'
+                }]
+            }
         }
     });
 
@@ -120,6 +136,7 @@ module.exports = function( grunt ) {
     grunt.loadNpmTasks( 'grunt-contrib-concat' );
     grunt.loadNpmTasks( 'grunt-contrib-uglify' );
     grunt.loadNpmTasks( 'grunt-contrib-jst' );
+    grunt.loadNpmTasks( 'grunt-contrib-copy' );
 
     grunt.registerTask( 'default', [ 'sass:dev', 'concat:js', 'watch' ] );
     grunt.registerTask( 'debug', [ 'sass:debug' ] );
