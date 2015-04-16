@@ -3,12 +3,12 @@
  *
  * Set up notification base. Uses notify.js.
  */
-var NotifyClass = Base.extend({
-
-    constructor: function() {},
-
+App.Notify.extend({
+    /**
+     * Initialise the library
+     */
     init: function() {
-        // set up notifyjs
+        // Set up notifyjs
         $.notify.addStyle( 'flat', {
             html:
                 '<div>' +

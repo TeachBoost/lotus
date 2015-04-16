@@ -1,10 +1,10 @@
 /**
  * Url class
  */
-var UrlClass = Base.extend({
-
-    constructor: function () {},
-
+App.Url.extend({
+    /**
+     * Initialise the library
+     */
     init: function () {
         App.Log.debug( 'Url library loaded', 'sys' );
     },
@@ -209,5 +209,4 @@ var UrlClass = Base.extend({
             ? ""
             : decodeURIComponent( results[ 1 ].replace( /\+/g, " " ) );
     }
-
 });

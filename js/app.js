@@ -281,12 +281,12 @@ App.extend({
         english: {}
     },
     // System classes
-    Log: null,
-    Message: null,
-    Notify: null,
-    Request: null,
-    Text: null,
-    Url: null,
+    Log: new Base(),
+    Message: new Base(),
+    Notify: new Base(),
+    Request: new Base(),
+    Text: new Base(),
+    Url: new Base(),
     // Integrity Tests
     Tests: [],
 
@@ -466,14 +466,6 @@ App.extend({
             success: 'success',
             info: 'info'
         });
-
-        // Load remaining classes
-        this.Log = new LogClass;
-        this.Message = new MessageClass;
-        this.Notify = new NotifyClass;
-        this.Request = new RequestClass;
-        this.Text = new TextClass;
-        this.Url = new UrlClass;
     },
 
     /**

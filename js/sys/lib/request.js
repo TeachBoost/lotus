@@ -15,10 +15,10 @@
  *   -> redirect    Redirect to a URL
  *   -> data        Any data variables coming with the payload
  */
-var RequestClass = Base.extend({
-
-    constructor: function() {},
-
+App.Request.extend({
+    /**
+     * Success callback hook
+     */
     hook: false,
 
     /**
@@ -41,7 +41,7 @@ var RequestClass = Base.extend({
     },
 
     /**
-     * Initialize the ajax/request library
+     * Initialise the ajax/request library
      */
     init: function() {
         App.Log.debug( 'Request library loaded', 'sys' );
@@ -364,5 +364,4 @@ var RequestClass = Base.extend({
 
         $.ajax( options );
     }
-
 });

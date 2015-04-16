@@ -4,15 +4,12 @@
  * Text conversions and util functions
  */
 
-var TextClass = Base.extend({
-
-    constructor: function () {},
-
+App.Text.extend({
     /**
-     *  Initialize the library
+     *  Initialise the library
      */
     init: function () {
-
+        App.Log.debug( 'Text library loaded', 'sys' );
     },
 
     /**
@@ -145,5 +142,4 @@ var TextClass = Base.extend({
 
         return id;
     }
-
 });

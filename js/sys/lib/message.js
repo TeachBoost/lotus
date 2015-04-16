@@ -3,7 +3,7 @@
  *
  * Contains all of the alerting and messaging used throughout the app.
  */
-var MessageClass = Base.extend({
+App.Message.extend({
     /**
      * Elements
      */

@@ -4,10 +4,10 @@
  * Configured for setting up document ready scripts and
  * page specific tasks.
  */
-var LogClass = Base.extend({
-
-    constructor: function () {},
-
+App.Log.extend({
+    /**
+     * Initialise the library
+     */
     init: function () {
         App.Log.debug( 'Logging library loaded', 'sys' );
     },
