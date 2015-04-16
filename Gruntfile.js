@@ -8,36 +8,36 @@ module.exports = function( grunt ) {
                 options: {
                     sourcemap: 'auto',
                     style: 'expanded',
-                    cacheLocation: './sass/cache/'
+                    cacheLocation: './src/sass/cache/'
                 },
                 files: {
-                    './css/debug/mixins.css': './sass/sys/mixins.sass',
-                    './css/debug/variables.css': './sass/sys/variables.sass',
-                    './css/debug/main.css': './sass/sys/main.sass',
-                    './css/debug/centaurfixes.css': './sass/sys/centaurfixes.sass',
-                    './css/debug/trunk.css': './sass/sys/dialogs.sass',
-                    './css/debug/modals.css': './sass/modals.sass'
+                    './build/css/debug/mixins.css': './src/sass/sys/mixins.sass',
+                    './build/css/debug/variables.css': './src/sass/sys/variables.sass',
+                    './build/css/debug/main.css': './src/sass/sys/main.sass',
+                    './build/css/debug/centaurfixes.css': './src/sass/sys/centaurfixes.sass',
+                    './build/css/debug/trunk.css': './src/sass/sys/dialogs.sass',
+                    './build/css/debug/modals.css': './src/sass/modals.sass'
                 }
             },
             dev: {
                 options: {
                     sourcemap: 'auto',
                     style: 'expanded',
-                    cacheLocation: './sass/cache/'
+                    cacheLocation: './src/sass/cache/'
                 },
                 files: {
-                    './css/app.css': './sass/index.sass'
+                    './build/css/app.css': './src/sass/index.sass'
                 }
             }
         },
         // File Watching
         watch: {
             sass: {
-                files: './sass/**/*.sass',
+                files: './src/sass/**/*.sass',
                 tasks: [ 'sass:dev' ]
             },
             js: {
-                files: [ './js/app/**/*.js', './js/sys/**/*.js', './js/app.js' ],
+                files: [ './src/js/app/**/*.js', './src/js/sys/**/*.js', './src/js/app.js' ],
                 tasks: [ 'concat:js' ]
             }
         },
@@ -48,9 +48,9 @@ module.exports = function( grunt ) {
                     './vendor/bootstrap/dist/css/bootstrap.min.css',
                     './vendor/fontawesome/css/font-awesome.min.css',
                     './vendor/tb-ui-kit/dist/css/build.css',
-                    './css/app.css'
+                    './build/css/app.css'
                 ],
-                dest: './css/build.css'
+                dest: './build/css/build.css'
           }
         },
         // JavaScript
@@ -73,29 +73,31 @@ module.exports = function( grunt ) {
                     './vendor/jquery.easing/js/jquery.easing.js',
                     './vendor/jquery.scrollTo/jquery.scrollTo.js',
                     // App bootstrap
-                    './js/app.js',
+                    './src/js/app.js',
                     // System libraries
-                    './js/sys/lib/log.js',
-                    './js/sys/lib/message.js',
-                    './js/sys/lib/notification.js',
-                    './js/sys/lib/request.js',
-                    './js/sys/lib/url.js',
-                    './js/sys/lib/template.js',
-                    './js/sys/lib/text.js',
-                    './js/sys/lib/url.js',
-                    './js/sys/lang/english.js',
+                    './src/js/sys/lib/log.js',
+                    './src/js/sys/lib/message.js',
+                    './src/js/sys/lib/notification.js',
+                    './src/js/sys/lib/request.js',
+                    './src/js/sys/lib/url.js',
+                    './src/js/sys/lib/template.js',
+                    './src/js/sys/lib/text.js',
+                    './src/js/sys/lib/url.js',
+                    './src/js/sys/lang/english.js',
                     // Application files
-                    './js/app/lang/english.js',
-                    './js/app/pages/home.js',
-                    './js/app/templates.js'
+                    './src/js/app/lang/english.js',
+                    './src/js/app/pages/home.js'
                 ],
-                dest: './js/dist/build.js'
+                dest: './build/js/build.js'
             }
         },
         uglify: {
             js: {
                 files: {
-                    './js/dist/build.min.js': [ './js/dist/build.js' ]
+                    './build/js/build.min.js': [
+                        './build/js/build.js',
+                        './build/js/templates.js'
+                    ]
                 }
             }
         },
@@ -103,14 +105,11 @@ module.exports = function( grunt ) {
         jst: {
             compile: {
                 options: {
-                    templateSettings: {
-                        interpolate : /\{\{(.+?)\}\}/g
-                    },
                     prettify: true,
                     namespace: 'App.Templates'
                 },
                 files: {
-                    './js/app/templates.js': [ './js/app/views/**/*.html' ]
+                    './build/js/templates.js': [ './src/html/**/*.html' ]
                 }
             }
         },
@@ -121,12 +120,20 @@ module.exports = function( grunt ) {
                     expand: true,
                     cwd: './vendor/tb-ui-kit/dist/images/',
                     src: '**',
-                    dest: './images/'
+                    dest: './build/images/'
                 }, {
                     expand: true,
                     flatten: true,
                     src: './vendor/fontawesome/fonts/*',
-                    dest: './fonts/'
+                    dest: './build/fonts/'
+                }]
+            },
+            dist: {
+                files: [{
+                    expand: true,
+                    cwd: './build/',
+                    src: '**',
+                    dest: './dist/'
                 }]
             }
         }
@@ -147,8 +154,8 @@ module.exports = function( grunt ) {
     grunt.registerTask( 'fonts', [ 'copy:main' ] );
     grunt.registerTask( 'images', [ 'copy:main' ] );
     grunt.registerTask( 'build', [
-        'sass:dev', 'cssmin:minify', 'concat:js', 'uglify:js',
-        'jst:compile', 'copy:main'
+        'sass:dev', 'cssmin:minify', 'jst:compile', 'copy:main',
+        'concat:js', 'uglify:js',
     ]);
     // grunt.registerTask( 'test', [ 'sass:test' ] );
 

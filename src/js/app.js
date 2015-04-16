@@ -249,7 +249,6 @@ App.EventTarget = ( function () {
  */
 App.extend({
     // Application variables
-    appPath: './js/app/',
     benchTime: {},
     env: 'development',
     icConsole: 'system-console',
@@ -265,6 +264,7 @@ App.extend({
     rootPath: '',
     version: null,
     working: false,
+    srcPath: './src/',
     // Browser info
     iPad: false,
     ie7: false,
@@ -598,6 +598,6 @@ App.extend({
      * Render a view
      */
     view: function ( path, data ) {
-        return this.Templates[ this.appPath + 'views/' + path + '.html' ]( data );
+        return this.Templates[ this.srcPath + 'html/' + path + '.html' ]( data );
     }
 });

@@ -1,11 +1,6 @@
 *.log
 .grunt
-.sass-cache
+build
 node_modules
 vendor
-js/dist
-js/app/templates.js
-css
-fonts
-images
-sass/cache
+src/sass/cache
