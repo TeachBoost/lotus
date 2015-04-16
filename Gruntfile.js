@@ -47,7 +47,7 @@ module.exports = function( grunt ) {
                 src: [
                     './vendor/bootstrap/dist/css/bootstrap.min.css',
                     './vendor/fontawesome/css/font-awesome.min.css',
-                    './vendor/tb-ui-kit/dist/css/build.css',
+                    './vendor/tb-ui-kit/dist/css/uikit.css',
                     './build/css/app.css'
                 ],
                 dest: './build/css/build.css'
