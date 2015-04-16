@@ -7,7 +7,8 @@ module.exports = function( grunt ) {
             debug: {
                 options: {
                     sourcemap: 'auto',
-                    style: 'expanded'
+                    style: 'expanded',
+                    cacheLocation: './sass/cache/'
                 },
                 files: {
                     './css/debug/mixins.css': './sass/sys/mixins.sass',
@@ -21,7 +22,8 @@ module.exports = function( grunt ) {
             dev: {
                 options: {
                     sourcemap: 'auto',
-                    style: 'expanded'
+                    style: 'expanded',
+                    cacheLocation: './sass/cache/'
                 },
                 files: {
                     './css/app.css': './sass/index.sass'

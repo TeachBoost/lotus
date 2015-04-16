@@ -6,14 +6,24 @@
  * http://www.opensource.org/licenses/mit-license.php
  */
 
+// Globals: Base, App
+window.App = window.App || {};
+window.Base = window.Base || function () {};
+
+// Create console if it doesn't exist (IE)
+if ( ! window.console ) {
+    window.console = {
+        log: function () {},
+        info: function () {},
+        warn: function () {},
+        error: function () {}
+    };
+}
+
 // Base class
 // Version 1.1
 // Copyright 2006-2010, Dean Edwards
 // Licensed under the MIT license
-var Base = function () {
-    // dummy
-};
-
 Base.extend = function ( _instance, _static ) { // subclass
     var extend = Base.prototype.extend,
         proto, constructor, klass;
@@ -131,7 +141,6 @@ Base.prototype = {
     }
 };
 
-// Initialise
 Base = Base.extend({
     constructor: function () {
         this.extend( arguments[ 0 ] );
@@ -166,69 +175,66 @@ Base = Base.extend({
     }
 });
 
-// Create console if it doesn't exist (IE)
-if ( ! window.console ) {
-    console = {
-        log: function () {},
-        info: function () {},
-        warn: function () {},
-        error: function () {}
-    };
-}
+// Initialise our App
+App = new Base();
 
 // Cross-browser eventing
 // Copyright 2010 Nicholas C. Zakas. All rights reserved.
 // Licensed under the MIT license
-function EventTarget () {
-    this._listeners = {};
-}
+App.EventTarget = ( function () {
+    function EventTarget () {
+        this._listeners = {};
+    }
 
-EventTarget.prototype = {
-    constructor: EventTarget,
+    EventTarget.prototype = {
+        constructor: EventTarget,
 
-    addListener: function ( type, listener ) {
-        if ( typeof this._listeners[ type ] == "undefined" ) {
-            this._listeners[ type ] = [];
-        }
-
-        this._listeners[ type ].push( listener );
-    },
-
-    fire: function( event ) {
-        if ( typeof event == "string" ) {
-            event = { type: event };
-        }
-
-        if ( ! event.target ) {
-            event.target = this;
-        }
-
-        if ( ! event.type ) {  // falsy
-            throw new Error( "Event object missing 'type' property." );
-        }
-
-        if ( this._listeners[ event.type ] instanceof Array ) {
-            var listeners = this._listeners[ event.type ];
-
-            for ( var i = 0, len = listeners.length; i < len; i++ ) {
-                listeners[ i ].call( this, event );
+        addListener: function ( type, listener ) {
+            if ( typeof this._listeners[ type ] == "undefined" ) {
+                this._listeners[ type ] = [];
             }
-        }
-    },
 
-    removeListener: function(type, listener){
-        if ( this._listeners[ type ] instanceof Array ) {
-            var listeners = this._listeners[ type ];
+            this._listeners[ type ].push( listener );
+        },
 
-            for ( var i = 0, len = listeners.length; i < len; i++ ) {
-                if ( listeners[ i ] === listener ) {
-                    listeners.splice( i, 1 );
-                    break;
+        fire: function( event ) {
+            if ( typeof event == "string" ) {
+                event = { type: event };
+            }
+
+            if ( ! event.target ) {
+                event.target = this;
+            }
+
+            if ( ! event.type ) {  // falsy
+                throw new Error( "Event object missing 'type' property." );
+            }
+
+            if ( this._listeners[ event.type ] instanceof Array ) {
+                var listeners = this._listeners[ event.type ];
+
+                for ( var i = 0, len = listeners.length; i < len; i++ ) {
+                    listeners[ i ].call( this, event );
+                }
+            }
+        },
+
+        removeListener: function(type, listener){
+            if ( this._listeners[ type ] instanceof Array ) {
+                var listeners = this._listeners[ type ];
+
+                for ( var i = 0, len = listeners.length; i < len; i++ ) {
+                    if ( listeners[ i ] === listener ) {
+                        listeners.splice( i, 1 );
+                        break;
+                    }
                 }
             }
         }
-    }
-};
+    };
+
+    return EventTarget;
+}());
 
 /**
  * Set up the application object. The flow of operations:
@@ -241,7 +247,7 @@ EventTarget.prototype = {
  *
  * Normal procudure is to App.extend({...}) followed by App.init();
  */
-var AppClass = Base.extend({
+App.extend({
     // Application variables
     appPath: './js/app/',
     benchTime: {},
@@ -283,8 +289,6 @@ var AppClass = Base.extend({
     Url: null,
     // Integrity Tests
     Tests: [],
-
-    constructor: function () {},
 
     /**
      * Base level error reporting to the browser
@@ -487,7 +491,7 @@ var AppClass = Base.extend({
     integrityCheck: function () {
         var self = this;
         this.IC = {
-            EventTarget: new EventTarget(),
+            EventTarget: new self.EventTarget(),
             Console: document.getElementById( self.icConsole ),
             Event: document.getElementById( self.icEvent ),
             Complete: false,
@@ -604,7 +608,4 @@ var AppClass = Base.extend({
     view: function ( path, data ) {
         return this.Templates[ this.appPath + 'views/' + path + '.html' ]( data );
     }
-
 });
-
-var App = new AppClass;
