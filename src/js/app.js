@@ -189,7 +189,7 @@ App.EventTarget = ( function () {
     EventTarget.prototype = {
         constructor: EventTarget,
 
-        addListener: function ( type, listener ) {
+        on: function ( type, listener ) {
             if ( typeof this._listeners[ type ] == "undefined" ) {
                 this._listeners[ type ] = [];
             }
@@ -197,7 +197,7 @@ App.EventTarget = ( function () {
             this._listeners[ type ].push( listener );
         },
 
-        fire: function( event ) {
+        fire: function ( event ) {
             if ( typeof event == "string" ) {
                 event = { type: event };
             }
@@ -219,7 +219,7 @@ App.EventTarget = ( function () {
             }
         },
 
-        removeListener: function(type, listener){
+        off: function ( type, listener ) {
             if ( this._listeners[ type ] instanceof Array ) {
                 var listeners = this._listeners[ type ];
 
@@ -573,7 +573,7 @@ App.extend({
             self.IC.ListenErrors[ Test.key ] = Test.error;
             self.IC.EvDone[ Test.key ] = false;
             // Attach listener
-            self.IC.EventTarget.addListener( Test.key, self.IC.Listen );
+            self.IC.EventTarget.on( Test.key, self.IC.Listen );
             total++;
         });
         // Set total count
