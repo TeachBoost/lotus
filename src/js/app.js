@@ -287,6 +287,7 @@ App.extend({
     Request: new Base(),
     Text: new Base(),
     Url: new Base(),
+    Pages: [],
     // Integrity Tests
     Tests: [],
 
