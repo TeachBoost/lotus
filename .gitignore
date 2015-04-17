@@ -1,4 +1,5 @@
 *.log
+*.orig
 .grunt
 build
 node_modules
