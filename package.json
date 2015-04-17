@@ -2,7 +2,7 @@
   "name": "Lotus",
   "version": "1.0.0",
   "description": "Application skeleton",
-  "main": "index.html",
+  "main": "demo.html",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
