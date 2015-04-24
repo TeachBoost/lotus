@@ -598,7 +598,17 @@ App.extend({
     /**
      * Render a view
      */
-    view: function ( path, data ) {
-        return this.Templates[ this.srcPath + 'html/' + path + '.html' ]( data );
+    view: function ( path, data, returnView ) {
+        var key = this.srcPath + 'html/views/' + path + '.html',
+            returnView = returnView || false;
+
+        if ( ! _.has( this.Templates, key ) ) {
+            App.Log.info( "Template key " + path + " doesn't exist!" );
+            return '';
+        }
+
+        return ( returnView )
+            ? this.Templates[ this.srcPath + 'html/views/' + path + '.html' ]
+            : this.Templates[ this.srcPath + 'html/views/' + path + '.html' ]( data );
     }
 });

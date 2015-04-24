@@ -12,11 +12,7 @@ module.exports = function( grunt ) {
                 },
                 files: {
                     './build/css/debug/mixins.css': './src/sass/sys/mixins.sass',
-                    './build/css/debug/variables.css': './src/sass/sys/variables.sass',
-                    './build/css/debug/main.css': './src/sass/sys/main.sass',
-                    './build/css/debug/centaurfixes.css': './src/sass/sys/centaurfixes.sass',
-                    './build/css/debug/trunk.css': './src/sass/sys/dialogs.sass',
-                    './build/css/debug/modals.css': './src/sass/modals.sass'
+                    './build/css/debug/variables.css': './src/sass/sys/variables.sass'
                 }
             },
             dev: {
@@ -101,7 +97,7 @@ module.exports = function( grunt ) {
                 }
             }
         },
-        // Templates
+        // Template Views
         jst: {
             compile: {
                 options: {
@@ -109,7 +105,38 @@ module.exports = function( grunt ) {
                     namespace: 'App.Templates'
                 },
                 files: {
-                    './build/js/templates.js': [ './src/html/**/*.html' ]
+                    './build/js/templates.js': [ './src/html/views/**/*.html' ]
+                }
+            }
+        },
+        // HTML Templates
+        template: {
+            local: {
+                options: {
+                    data: {
+                        environment: "development",
+                        asset_version: 1,
+                        asset_path: ".",
+                        root_path: ".",
+                        api_path: "localhost"
+                    }
+                },
+                files: {
+                    './build/index.html': [ './src/html/templates/index.html' ]
+                }
+            },
+            development: {
+                options: {
+                    data: {
+                        environment: "development",
+                        asset_version: 1,
+                        asset_path: "https://app.cdn",
+                        root_path: "https://app.dev/name",
+                        api_path: "https://app.dev"
+                    }
+                },
+                files: {
+                    './build/index.html': [ './src/html/templates/index.html' ]
                 }
             }
         },
@@ -146,17 +173,22 @@ module.exports = function( grunt ) {
     grunt.loadNpmTasks( 'grunt-contrib-uglify' );
     grunt.loadNpmTasks( 'grunt-contrib-jst' );
     grunt.loadNpmTasks( 'grunt-contrib-copy' );
+    grunt.loadNpmTasks( 'grunt-template' );
 
-    grunt.registerTask( 'default', [ 'sass:dev', 'concat:js', 'watch' ] );
+    grunt.registerTask( 'default', [ 'sass:dev', 'concat:js', 'jst:compile', 'watch' ] );
     grunt.registerTask( 'debug', [ 'sass:debug' ] );
-    grunt.registerTask( 'js', [ 'concat:js', 'uglify:js' ] );
+    grunt.registerTask( 'js', [ 'jst:compile', 'concat:js' ] );
     grunt.registerTask( 'css', [ 'sass:dev', 'cssmin:minify' ] );
     grunt.registerTask( 'fonts', [ 'copy:main' ] );
     grunt.registerTask( 'images', [ 'copy:main' ] );
-    grunt.registerTask( 'build', [
-        'sass:dev', 'cssmin:minify', 'jst:compile', 'copy:main',
-        'concat:js', 'uglify:js',
-    ]);
-    // grunt.registerTask( 'test', [ 'sass:test' ] );
+    grunt.registerTask( 'build', [ 'sass:dev', 'cssmin:minify', 'jst:compile', 'copy:main', 'concat:js' ] );
+    grunt.registerTask( 'dist', [ 'uglify:js', 'copy:dist' ] );
+    grunt.registerTask( 'printenv', function () {
+        console.log( process.env );
+    });
+
+    // Environment builds
+    grunt.registerTask( 'local', [ 'template:local', 'build' ] );
+    grunt.registerTask( 'development', [ 'template:development', 'build' ] );
 
 };

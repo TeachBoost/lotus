@@ -41,30 +41,74 @@ HomePage.extend({
      * Initialize state
      */
     init: function () {
+        // Attach font size click events
+        this.fontSizeEvents();
         // Set font size
-        //this.setFontSize( false );
+        this.setFontSize( false );
     },
 
     /**
-     * Updates font size setting
+     * Sets up events for toggling font size
      */
-    setFontSize: function ( size ) {
-        if ( ! size ) {
-            size = App.Storage.get( App.Const.storage_font_size, true );
+    fontSizeEvents: function () {
+        var self = this,
+            $toggle = $( '#toggle-zoom' );
+
+        // When the + or - button is pressed
+        $toggle.on( 'click.home', 'button.adjust', function ( e ) {
+            var $this = $( this ),
+                $size = $this.parent().find( '.size' ),
+                direction = $this.data( 'direction' ),
+                mag = $size.data( 'mag' ),
+                sizes = App.Config.bodySizes;
+
+            if ( direction === 'up' ) {
+                mag++;
+            }
+            else if ( direction === 'down' ) {
+                mag--;
+            }
+
+            mag = Math.min( sizes[ _.size( sizes ) - 1 ].mag, mag );
+            mag = Math.max( sizes[ 0 ].mag, mag );
+            self.setFontSize( mag );
+            e.stopPropagation();
+            e.preventDefault();
+        });
+
+        // When the middle divider is pressed, do nothing
+        $( '#toggle-zoom' ).on( 'click.home', 'button.size', function ( e ) {
+            e.stopPropagation();
+        });
+    },
+
+    /**
+     * Updates font size setting based on a magnification level
+     */
+    setFontSize: function ( mag ) {
+        var size;
+
+        //@TODO Get from storage
+        //if ( ! mag ) {
+        //    mag = App.Storage.get( App.Const.storage_font_size, true );
+        //}
+
+        if ( ! mag ) {
+            mag = 2;
         }
 
-        if ( ! size ) {
-            size = 16;
-        }
+        size = _.findWhere( App.Config.bodySizes, { mag: mag } );
 
-        App.Storage.set(
-            App.Const.storage_font_size,
-            size,
-            true );
-        $( 'body' ).css( 'font-size', size )
-            .removeClass( 's14 s15 s16 s17 s18 s19' )
-            .addClass( 's' + size );
-        $( '#toggle-zoom' ).find( '.percent' ).text( size + ' pt' );
+        //App.Storage.set(
+        //    App.Const.storage_font_size,
+        //    size,
+        //    true );
+        $( 'body' ).removeClass( 'x1 x2 x3 x4 x5' )
+            .addClass( 'x' + mag );
+        $( '#toggle-zoom' ).find( '.size' )
+            .data( 'pt', size.pt )
+            .data( 'mag', size.mag )
+            .text( size.pt + ' pt' );
     },
 
     /**
@@ -72,26 +116,6 @@ HomePage.extend({
      */
     isTouchDevice: function () {
         return App.iPad;
-    },
-
-    /**
-     * Handle admin events
-     */
-    processAdmin: function () {
-        if ( ! App.Storage.get( App.Const.storage_is_admin ) ) {
-            return false;
-        }
-
-        $( '.admin-feature' ).show();
-    },
-
-    /**
-     * Handle beta features
-     */
-    processBeta: function () {
-        if ( ! App.Storage.get( App.Const.storage_is_beta ) ) {
-            return false;
-        }
     },
 
     /**
@@ -137,12 +161,10 @@ HomePage.extend({
      */
     lockScreen: function () {
         $( '#app-lock-overlay' ).fadeIn();
-        App.Form.autosaveEnabled = false;
     },
 
     unlockScreen: function () {
         $( '#app-lock-overlay' ).fadeOut( 'fast' );
-        App.Form.autosaveEnabled = true;
     }
 
 });
