@@ -1,4 +1,4 @@
-module.exports = function( grunt ) {
+module.exports = function ( grunt ) {
 
     grunt.initConfig({
         pkg: grunt.file.readJSON( 'package.json' ),
@@ -30,11 +30,15 @@ module.exports = function( grunt ) {
         watch: {
             sass: {
                 files: './src/sass/**/*.sass',
-                tasks: [ 'sass:dev' ]
+                tasks: [ 'sass:dev', 'cssmin:minify' ]
             },
             js: {
                 files: [ './src/js/app/**/*.js', './src/js/sys/**/*.js', './src/js/app.js' ],
                 tasks: [ 'concat:js' ]
+            },
+            html: {
+                files: './src/html/views/**/*.html',
+                tasks: [ 'jst:compile' ]
             }
         },
         // Minify the CSS
