@@ -1,8 +1,8 @@
 /**
  * Home page
  */
-var HomePage = new Base;
-HomePage.extend({
+App.Pages.Home = new Base;
+App.Pages.Home.extend({
     /**
      * onbeforeunload switch
      */
@@ -31,7 +31,7 @@ HomePage.extend({
             // Initialize the page
             self.init();
             // Trigger to integrity check that we're done here
-            App.IC.EventTarget.fire( App.Tests.PAGE_LOADED.key );
+            App.IC.EventTarget.fire( App.Tests.HOME_LOADED.key );
         });
 
         App.Log.debug( 'HomePage load()', 'sys' );
