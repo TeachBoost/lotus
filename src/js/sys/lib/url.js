@@ -23,7 +23,7 @@ App.Url.extend({
      * Generate an absolute URL
      */
     absolute: function ( url ) {
-        return App.rootPath + url;
+        return App.rootPath + '/' + url;
     },
 
     /**
