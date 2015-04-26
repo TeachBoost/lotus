@@ -1,9 +1,8 @@
 /**
- * Test class
+ * Text class
  *
  * Text conversions and util functions
  */
-
 App.Text.extend({
     /**
      *  Initialise the library
