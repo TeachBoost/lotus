@@ -94,13 +94,6 @@ App.Text.extend({
     },
 
     /**
-     * Return initials of a user's name
-     */
-    initialize: function ( user ) {
-        return user.label.match( /\b(\w)/g ).join( '' );
-    },
-
-    /**
      * Get the "...-ID" ID part
      */
     getTrailingId: function( str ) {
