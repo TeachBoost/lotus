@@ -54,19 +54,6 @@ App.Text.extend({
     },
 
     /**
-     * Prepare a list of competency IDs
-     */
-    getCompList: function ( mapping, competencies ) {
-        var list = [];
-        _.each ( competencies, function ( comp ) {
-            if ( _.has( mapping, comp ) ) {
-                list.push( mapping[ comp ] );
-            }
-        });
-        return list.join( ', ' );
-    },
-
-    /**
      * Create a human readable list
      */
     listify: function ( array /*, tag */ ) {
