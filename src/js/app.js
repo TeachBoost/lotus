@@ -264,6 +264,7 @@ App.extend({
     rootPath: '',
     version: null,
     working: false,
+    workingDelay: 0,
     srcPath: './src/',
     // Browser info
     iPad: false,
@@ -507,7 +508,9 @@ App.extend({
             },
             // Boot the application
             Done: function () {
-                self.Message.unsetWorking();
+                _.delay( function () {
+                    App.Message.unsetWorking();
+                }, App.workingDelay );
                 App.IC.Complete = true;
             },
             // Timeout functions for error handling and message display
