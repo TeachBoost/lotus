@@ -1,6 +1,6 @@
 /**
  * English language file (application)
  */
-App.Lang.english = _.extend( App.Lang.english, {
+App.Langs.english = _.extend( App.Langs.english, {
     // Extend here
 });

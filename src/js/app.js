@@ -278,7 +278,8 @@ App.extend({
     // System configs
     Config: {},
     Const: {},
-    Lang: {
+    Lang: {},
+    Langs: {
         english: {}
     },
     // System classes
@@ -468,6 +469,14 @@ App.extend({
             success: 'success',
             info: 'info'
         });
+
+        // Language
+        if ( _.has( this.Langs, this.language ) ) {
+            this.Lang = this.Langs[ this.language ];
+        }
+        else {
+            this.Lang = this.Langs[ 'english' ];
+        }
     },
 
     /**

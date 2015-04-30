@@ -3,18 +3,18 @@
  * All system language files delcare SysLang. It's left to
  * the Gruntfile to pick which language to load.
  */
-App.Lang.english = {
+App.Langs.english = {
     cancel: 'Cancel',
     done: 'Done',
     done_exclame: 'Done!',
-    ok: 'OK',
+    error_default: 'Sorry, there was a problem.',
+    error_request: 'Sorry, there was a problem with that request. Please refresh the page and try again.',
     loading: 'Loading',
     next: 'Next',
+    ok: 'OK',
     prev: 'Prev',
     redirecting: 'Redirecting',
     save: 'Save',
     submit: 'Submit',
-    working: 'Working',
-    error_default: 'Sorry, there was a problem.',
-    error_request: 'Sorry, there was a problem with that request. Please refresh the page and try again.',
+    working: 'Working'
 };
