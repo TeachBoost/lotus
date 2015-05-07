@@ -7,7 +7,6 @@ App.Message.extend({
     /**
      * Elements
      */
-    $eltWorking: null,
     $eltWorkingOverlay: null,
     $eltStatus: null,
     $eltAlert: null,
@@ -33,17 +32,12 @@ App.Message.extend({
         var self = this;
 
         // Create the working element (this exists outside of the defer)
-        if ( ! $( '#app-working' ).length ) {
-            jQuery( '<div/>', {
-                id: 'app-working'
-            }).appendTo( 'body' );
-            jQuery( '<span/>' ).appendTo( '#app-working' );
+        if ( ! $( '#app-working-overlay' ).length ) {
             jQuery( '<div/>', {
                 id: 'app-working-overlay'
             }).appendTo( 'body' );
         }
 
-        this.$eltWorking = $( '#app-working' );
         this.$eltWorkingOverlay = $( '#app-working-overlay' );
 
         _.defer( function() {
@@ -439,15 +433,9 @@ App.Message.extend({
     /**
      * Loads the global working dialog to prevent action on the page
      */
-    setWorking: function( msg ) {
+    setWorking: function () {
         // Display the overlay
         this.$eltWorkingOverlay.show();
-
-        // Set the working content
-        msg = msg || App.Lang.working;
-        this.$eltWorking.find( 'span' ).html( msg );
-
-        this.repositionWorking( true );
     },
 
     /**
@@ -455,31 +443,6 @@ App.Message.extend({
      */
     unsetWorking: function() {
         this.$eltWorkingOverlay.fadeOut();
-        this.$eltWorking.hide();
-        this.$eltWorking.find( 'span' ).html( '' );
-    },
-
-    /**
-     * Set the working dialog in the center of the page
-     */
-    repositionWorking: function( /* show */ ) {
-        var show = ( arguments.length > 0 )
-            ? arguments[ 0 ]
-            : false;
-
-        if ( show ) {
-            this.$eltWorking.show();
-        }
-
-        var height = this.$eltWorking.outerHeight(),
-            windowHeight = $( window ).height(),
-            width = this.$eltWorking.outerWidth(),
-            windowWidth = $( window ).width();
-
-        this.$eltWorking.css({
-            'top' : ( windowHeight / 2 ) - ( height / 2 ),
-            'left' : ( windowWidth / 2 ) - ( width / 2 )
-        });
     }
 
 });
