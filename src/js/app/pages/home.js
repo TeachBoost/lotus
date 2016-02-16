@@ -9,7 +9,7 @@ App.Pages.Home.extend({
     allowUnload: false,
 
     /**
-     * Set up page event handlers
+     * Set up page event handlers.
      */
     load: function () {
         var self = this;
@@ -34,7 +34,7 @@ App.Pages.Home.extend({
             App.IC.EventTarget.fire( App.Tests.HOME_LOADED.key );
         });
 
-        App.Log.debug( 'HomePage load()', 'sys' );
+        App.Log.debug( 'Home page loaded', 'sys' );
     },
 
     /**
@@ -89,7 +89,7 @@ App.Pages.Home.extend({
     },
 
     /**
-     * Updates font size setting based on a magnification level
+     * Updates font size setting based on a magnification level.
      */
     setFontSize: function ( mag ) {
         var size;

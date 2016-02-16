@@ -14,7 +14,7 @@ App.Storage.extend({
     },
 
     /**
-     * Save data to a key
+     * Save data to a key.
      */
     set: function ( key, value /*, useLocalStorage = false */ ) {
         var useLocalStorage = ( arguments.length > 2 )
@@ -31,7 +31,7 @@ App.Storage.extend({
     },
 
     /**
-     * Gets a value by key
+     * Gets a value by key.
      */
     get: function ( key /*, useLocalStorage = false, defaultVal = null */ ) {
         var useLocalStorage = ( arguments.length > 1 )
@@ -60,7 +60,7 @@ App.Storage.extend({
     },
 
     /**
-     * Delete a storage entry
+     * Delete a storage entry.
      */
     deleteKey: function ( key /*, useLocalStorage = false */ ) {
         var useLocalStorage = ( arguments.length > 1 )
@@ -79,7 +79,7 @@ App.Storage.extend({
     },
 
     /**
-     * Flush all stored data
+     * Flush all stored data.
      */
     flush: function ( /* includeLocalStorage = true, preserveKeys = [] */ ) {
         var includeLocalStorage = ( arguments.length > 0 )
@@ -96,7 +96,7 @@ App.Storage.extend({
     },
 
     /**
-     * Wrapper to flush local storage data
+     * Wrapper to flush local storage data.
      */
     flushLocalStorage: function () {
         var preserveKeys = ( arguments.length )
