@@ -11,7 +11,6 @@
  *   -> status      Response status
  *   -> message     Response message
  *   -> html        Array with elements of the form target => content
- *   -> script      JavaScript code to execute
  *   -> redirect    Redirect to a URL
  *   -> data        Any data variables coming with the payload
  */
@@ -35,6 +34,7 @@ App.Request.extend({
         data: {
             ajax: true
         },
+        delayStatus: null,
         setStatus: true,
         statusMessage: null,
         redirectLast: false
@@ -43,7 +43,7 @@ App.Request.extend({
     /**
      * Initialise the ajax/request library
      */
-    init: function() {
+    init: function () {
         App.Log.debug( 'Request library loaded', 'sys' );
     },
 
@@ -51,7 +51,7 @@ App.Request.extend({
      * Set up the form for ajax submit. overwrite and options and set
      * up the defaults
      */
-    ajaxForm: function( form /*, formOptions */ ) {
+    ajaxForm: function ( form /*, formOptions */ ) {
         var formOptions = ( arguments.length > 1 )
             ? arguments[ 1 ]
             : {};
@@ -67,42 +67,42 @@ App.Request.extend({
     /**
      * Prepare the options for an ajax form
      */
-    getOptions: function( formOptions ) {
+    getOptions: function ( formOptions ) {
         var self = this,
             options = _.extend( {}, this.defaults, formOptions );
-
         var successCallback = ( ! _.isUndefined( formOptions.onSuccess )
                 && _.isFunction( formOptions.onSuccess ))
             ? formOptions.onSuccess
-            : function() { return true; };
-
+            : function () { return true; };
         var postSuccessCallback = ( ! _.isUndefined( formOptions.postSuccess )
                 && _.isFunction( formOptions.postSuccess ))
             ? formOptions.postSuccess
-            : function() { return true; };
-
+            : function () { return true; };
         var errorCallback = ( ! _.isUndefined( formOptions.onError )
                 && _.isFunction( formOptions.onError ))
             ? formOptions.onError
-            : function() { return true; };
-
+            : function () { return true; };
         var beforeSendCallback = ( ! _.isUndefined( formOptions.beforeSend )
                 && _.isFunction( formOptions.beforeSend ))
             ? formOptions.beforeSend
-            : function() { return true; };
+            : function () { return true; };
 
-        options.beforeSend = function() {
+        options.beforeSend = function () {
+            var msg;
+
             if ( options.setStatus ) {
-                var msg = ( options.statusMessage )
+                msg = ( options.statusMessage )
                     ? options.statusMessage
                     : App.Lang.loading;
-                App.Message.setStatus( msg, 'request' );
+                App.Message.setStatus( msg, 'request', false, options.delayStatus );
             }
 
             return beforeSendCallback();
         };
 
-        options.success = function( response, status, xhr, jqForm ) {
+        options.success = function ( response, status, xhr, jqForm ) {
+            var redirectFunction = null;
+
             // Set up defaults if we didn't get something in the response
             response = ( response ) ? response : {};
             response.status = ( ! _.isUndefined( response.status )
@@ -129,20 +129,20 @@ App.Request.extend({
             }
 
             // Handle the response
-            var redirectFunction = null;
-
             if ( ! _.isUndefined( response.redirect )
                 && response.redirect != null
                 && response.redirect.length )
             {
-                redirectFunction = function() {
+                redirectFunction = function () {
                     App.Message.setStatus( App.Lang.redirecting, 'request' );
                     window.location = response.redirect;
                     return;
                 };
             }
 
-            if ( _.isFunction( redirectFunction ) && ! options.redirectLast ) {
+            if ( _.isFunction( redirectFunction )
+                && ! options.redirectLast )
+            {
                 return redirectFunction();
             }
 
@@ -172,7 +172,9 @@ App.Request.extend({
                         App.Notify.success( response.message );
                     }
                 }
-                else if ( response.status == App.Const.info && response.message.length ) {
+                else if ( response.status === App.Const.info
+                    && response.message.length )
+                {
                     App.Notify.info( response.message );
 
                     if ( ! successCallback( response, status, xhr, jqForm ) ) {
@@ -184,8 +186,17 @@ App.Request.extend({
                 }
             }
 
-            if ( ! _.isUndefined( response.html ) && response.html != null ) {
-                // Iterate thru each target->content and update the target accordingly
+            if ( ! _.isUndefined( response.messages ) ) {
+                _.each( response.messages, function ( message ) {
+                    App.Notify[ message.status ]( message.text );
+                });
+            }
+
+            if ( ! _.isUndefined( response.html )
+                && response.html !== null )
+            {
+                // Iterate thru each target->content and update the
+                // target accordingly
                 for ( target in response.html ) {
                     App.Log.debug( "Updating HTML in " + target );
 
@@ -201,10 +212,6 @@ App.Request.extend({
                 }
             }
 
-            if ( ! _.isUndefined( response.script ) && response.script != null && response.script.length ) {
-                eval( response.script );
-            }
-
             if ( options.setStatus ) {
                 App.Message.unsetStatus( 'request' );
             }
@@ -217,7 +224,7 @@ App.Request.extend({
         };
 
         if ( _.isUndefined( options.error ) || ! options.error ) {
-            options.error = function( qXHR, textStatus, errorThrown ) {
+            options.error = function ( qXHR, textStatus, errorThrown ) {
                 // Check if request was aborted from lack of connectivity.
                 if ( options.setStatus ) {
                     App.Message.unsetStatus( 'request' );
@@ -244,7 +251,7 @@ App.Request.extend({
     /**
      * Submits an ajax form
      */
-    submit: function( form ) {
+    submit: function ( form ) {
         var $form = ( _.isString( form ) )
             ? $( form )
             : form;
@@ -254,27 +261,34 @@ App.Request.extend({
     /**
      * Submit a dynamically created form to the specified URL
      */
-    standardSubmit: function( url, data /* , method */ ) {
+    standardSubmit: function ( url, data /* , method */ ) {
         var count = $( '.app-js-standard-submit' ).length,
             formId = 'app-js-standard-submit-' + count;
             method = ( arguments.length > 2 )
                 ? arguments[ 2 ]
-                : 'POST';
+                : 'POST',
+            input = {
+                type: 'hidden'
+            };
 
         $( 'body' ).append( $( '<form/>', {
             id: formId,
             method: method,
             action: url
-        }) );
+        }));
 
         $form = $( '#' + formId );
 
         for ( i in data ) {
-            $( '<input>' ).attr({
-                type: 'hidden',
-                name: i,
-                value: data[ i ]
-            }).appendTo( $form );
+            if ( _.isObject( data[ i ] ) && _.has( data[ i ], 'name' ) ) {
+                input.name = data[ i ].name;
+                input.value = data[ i ].value;
+            }
+            else {
+                input.name = i;
+                input.value = data[ i ];
+            }
+            $( '<input>' ).attr( input ).appendTo( $form );
         }
 
         $form.submit();
@@ -283,7 +297,7 @@ App.Request.extend({
     /**
      * Serialize a form to be in object notation for the plugin
      */
-    serializeForm: function( form ) {
+    serializeForm: function ( form ) {
         var $form = ( _.isString( form ) )
             ? $( form )
             : form;
@@ -302,18 +316,17 @@ App.Request.extend({
     /**
      * Performs an ajax POST request
      */
-    ajaxPost: function( url, data, callback /*, formOptions */ ) {
+    ajaxPost: function ( url, data, callback /*, formOptions */ ) {
         var formOptions = ( arguments.length > 3 )
             ? arguments[ 3 ]
             : {};
-
         this._ajaxCall( url, data, callback, formOptions, 'POST' );
     },
 
     /**
      * Performs an ajax GET request
      */
-    ajaxGet: function( url, data, callback /*, formOptions */ ) {
+    ajaxGet: function ( url, data, callback /*, formOptions */ ) {
         var formOptions = ( arguments.length > 3 )
             ? arguments[ 3 ]
             : {};
@@ -324,16 +337,16 @@ App.Request.extend({
     /**
      * Perform an ajax call (internal)
      */
-    _ajaxCall: function( url, data, callback, formOptions, method ) {
-        formOptions.type = method;
-        formOptions.data = data;
-        formOptions.postSuccess = callback;
-
-        // If the URL starts with http:// then use it as is, otherwise add the
-        // url to the base href and use that as the string
+    _ajaxCall: function ( url, data, callback, formOptions, method ) {
+        // If the URL starts with http:// then use it as is, otherwise
+        // add the url to the base href and use that as the string
         var expression = /([hH][tT][tT][pP]|[hH][tT][tT][pP][sS]):\/\/(([A-Za-z0-9\.-])+(:[0-9]+)?\.[A-Za-z]{2,5}|((\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})(:[0-9]+)?))/;
         var regex = new RegExp( expression );
         var options;
+
+        formOptions.type = method;
+        formOptions.data = data;
+        formOptions.postSuccess = callback;
 
         if ( _.isUndefined( url ) || ! url.length ) {
             App.Log.error( "Attempted ajaxCall on an empty URL" );

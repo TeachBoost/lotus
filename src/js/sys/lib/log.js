@@ -5,19 +5,18 @@
  * page specific tasks.
  */
 App.Log.extend({
-    /**
-     * Initialise the library
-     */
     init: function () {
         App.Log.debug( 'Logging library loaded', 'sys' );
     },
 
     debug: function ( msg /* , prefix */ ) {
+        var prefix, args;
+
         if ( App.Config.log_level >= 4 ) {
-            var prefix = ( arguments.length > 1 )
-                    ? this.getBenchmarkPrefix( arguments[ 1 ] )
-                    : '',
-                args = ( _.isArray( msg ) ) ? msg : [ msg ];
+            prefix = ( arguments.length > 1 )
+                ? this.getBenchmarkPrefix( arguments[ 1 ] )
+                : ''
+            args = ( _.isArray( msg ) ) ? msg : [ msg ];
             prefix.length && args.unshift( prefix );
             ( 'apply' in console.log )
                 ? console.log.apply( console, args )
@@ -26,11 +25,13 @@ App.Log.extend({
     },
 
     info: function ( msg /* , prefix */ ) {
+        var prefix, args;
+
         if ( App.Config.log_level >= 3 ) {
-            var prefix = ( arguments.length > 1 )
-                    ? this.getBenchmarkPrefix( arguments[ 1 ] )
-                    : '',
-                args = ( _.isArray( msg ) ) ? msg : [ msg ];
+            prefix = ( arguments.length > 1 )
+                ? this.getBenchmarkPrefix( arguments[ 1 ] )
+                : '';
+            args = ( _.isArray( msg ) ) ? msg : [ msg ];
             prefix.length && args.unshift( prefix );
             ( 'apply' in console.log )
                 ? console.info.apply( console, args )
@@ -39,11 +40,13 @@ App.Log.extend({
     },
 
     warn: function ( msg /* , prefix */ ) {
+        var prefix, args;
+
         if ( App.Config.log_level >= 2 ) {
-            var prefix = ( arguments.length > 1 )
-                    ? this.getBenchmarkPrefix( arguments[ 1 ] )
-                    : '',
-                args = ( _.isArray( msg ) ) ? msg : [ msg ];
+            prefix = ( arguments.length > 1 )
+                ? this.getBenchmarkPrefix( arguments[ 1 ] )
+                : '';
+            args = ( _.isArray( msg ) ) ? msg : [ msg ];
             prefix.length && args.unshift( prefix );
             ( 'apply' in console.log )
                 ? console.warn.apply( console, args )
@@ -52,11 +55,11 @@ App.Log.extend({
     },
 
     error: function ( msg /*, prefix, data */ ) {
-        if ( App.Config.log_level >= 1 ) {
-            var prefix = '',
-                data = {},
-                args;
+        var prefix = '',
+            data = {},
+            args;
 
+        if ( App.Config.log_level >= 1 ) {
             if ( arguments.length > 1 ) {
                 if ( _.isString( arguments[ 1 ] ) ) {
                     prefix = this.getBenchmarkPrefix( arguments[ 1 ] );
@@ -90,5 +93,4 @@ App.Log.extend({
     getBenchmarkPrefix: function ( key ) {
         return '[' + key + ' ' + App.benchmark( key ) + ']';
     }
-
 });

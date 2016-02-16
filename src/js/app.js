@@ -253,6 +253,7 @@ App.extend({
     env: 'development',
     icConsole: 'system-console',
     icEvent: 'system-event',
+    icOverlay: 'system-overlay',
     language: 'english',
     languages: {
         english: 'english'
@@ -308,6 +309,22 @@ App.extend({
      */
     debug: function ( message ) {
         console.log( message );
+    },
+
+    /**
+     * Recursively extend an object with another object
+     */
+    _extend: function ( destination, source ) {
+        for ( var property in source ) {
+            if ( typeof source[ property ] === "object" ) {
+                destination[ property ] = destination[ property ] || {};
+                arguments.callee( destination[ property ], source[ property ] );
+            }
+            else {
+                destination[ property ] = source[ property ];
+            }
+        }
+        return destination;
     },
 
     /**
@@ -477,6 +494,11 @@ App.extend({
         else {
             this.Lang = this.Langs[ 'english' ];
         }
+
+        // Interpolate language lines with variables
+        this.Lang.sprintf = function ( line, data ) {
+            return _.template( line )( data );
+        };
     },
 
     /**
@@ -497,6 +519,7 @@ App.extend({
             EventTarget: new self.EventTarget(),
             Console: document.getElementById( self.icConsole ),
             Event: document.getElementById( self.icEvent ),
+            Overlay: document.getElementById( self.icOverlay ),
             Complete: false,
             ListenSuccess: 0,
             ListenTotal: 0,
@@ -567,6 +590,7 @@ App.extend({
                 }
             },
             _consoleLog: function ( message, type, overwrite ) {
+                App.IC.Overlay.style.display = 'block';
                 App.IC.Console.innerHTML =
                     '<p class="' + type + '">' + message +
                     "</p>" +
@@ -611,8 +635,10 @@ App.extend({
      * Render a view
      */
     view: function ( path, data, returnView ) {
-        var key = this.srcPath + 'html/views/' + path + '.html',
-            returnView = returnView || false;
+        var key = this.srcPath + 'html/views/' + path + '.html';
+        if ( returnView === undefined ) {
+            returnView = false;
+        }
 
         if ( ! _.has( this.Templates, key ) ) {
             App.Log.info( "Template key " + path + " doesn't exist!" );
@@ -622,5 +648,33 @@ App.extend({
         return ( returnView )
             ? this.Templates[ this.srcPath + 'html/views/' + path + '.html' ]
             : this.Templates[ this.srcPath + 'html/views/' + path + '.html' ]( data );
+    },
+
+    /**
+     * Performs an ajax update, the respond of which is used to update
+     * a section of the DOM.
+     */
+    updateView: function ( selector, $form, path, callback ) {
+        var key = this.srcPath + 'html/views/' + path + '.html',
+            data = $form.serializeArray();
+        data.push({
+            name: 'ajax',
+            value: true
+        });
+
+        // Send off the ajax request. This passes the response.data
+        // object to the view.
+        App.Request.ajaxPost(
+            $form.attr( 'action' ),
+            data,
+            function ( response ) {
+                if ( ! _.has( App.Templates, key ) ) {
+                    App.Log.info( "Template key " + path + " doesn't exist!" );
+                    return '';
+                }
+
+                App.Templates[ App.srcPath + 'html/views/' + path + '.html' ]( response.data );
+                callback( response.data );
+            });
     }
 });

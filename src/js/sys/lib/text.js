@@ -4,9 +4,6 @@
  * Text conversions and util functions
  */
 App.Text.extend({
-    /**
-     *  Initialise the library
-     */
     init: function () {
         App.Log.debug( 'Text library loaded', 'sys' );
     },
@@ -39,6 +36,7 @@ App.Text.extend({
      */
     addCommas: function ( str ) {
         var x, x1, x2, rgx;
+
         str += '';
         x = str.split( '.' );
         x1 = x[ 0 ];
@@ -93,6 +91,13 @@ App.Text.extend({
     },
 
     /**
+     * Return initials of a user's name
+     */
+    initialize: function ( user ) {
+        return user.label.match( /\b(\w)/g ).join( '' );
+    },
+
+    /**
      * Get the "...-ID" ID part
      */
     getTrailingId: function( str ) {
@@ -108,6 +113,7 @@ App.Text.extend({
      */
     uniqueId: function ( steps ) {
         var id = "",
+            i,
             s4 = function () {
                 return Math
                     .floor( ( 1 + Math.random() ) * 0x10000 )
@@ -115,10 +121,26 @@ App.Text.extend({
                     .substring( 1 );
             };
 
-        for ( var i = 1; i <= steps; i++ ) {
+        for ( i = 1; i <= steps; i++ ) {
             id = id + s4();
         }
 
         return id;
+    },
+
+    toRoman: function ( num ) {
+        var digits = num.toString().split( '' ),
+            key = [
+                '', 'C', 'CC', 'CCC', 'CD', 'D', 'DC', 'DCC', 'DCCC', 'CM',
+               '', 'X', 'XX', 'XXX', 'XL', 'L', 'LX', 'LXX', 'LXXX', 'XC',
+               '', 'I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX' ],
+            roman = '',
+            i = 3;
+
+        while ( i-- ) {
+            roman = ( key[ +digits.pop() + ( i * 10 ) ] || '' ) + roman;
+        }
+
+        return Array( +digits.join( '' ) + 1 ).join( 'M' ) + roman;
     }
 });

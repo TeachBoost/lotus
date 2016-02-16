@@ -5,7 +5,7 @@
  */
 App.Notify.extend({
     /**
-     * Initialise the library
+     * Initialises an instance of the jQuery notify plugin
      */
     init: function() {
         // Set up notifyjs
@@ -56,7 +56,7 @@ App.Notify.extend({
     success: function ( message ) {
         $.notify({
             text: message,
-            icon: '<i class="fa fa-check" style="top:-2px;"></i>'
+            icon: '<i class="fa fa-check"></i>'
         }, 'success' );
     },
 
@@ -80,5 +80,4 @@ App.Notify.extend({
             icon: '<i class="fa fa-warning"></i>'
         }, 'warning' );
     }
-
 });

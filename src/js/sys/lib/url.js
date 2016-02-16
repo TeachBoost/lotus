@@ -2,9 +2,6 @@
  * Url class
  */
 App.Url.extend({
-    /**
-     * Initialise the library
-     */
     init: function () {
         App.Log.debug( 'Url library loaded', 'sys' );
     },
@@ -23,7 +20,7 @@ App.Url.extend({
      * Generate an absolute URL
      */
     absolute: function ( url ) {
-        return App.rootPath + '/' + url;
+        return App.rootPath + url;
     },
 
     /**
@@ -110,10 +107,11 @@ App.Url.extend({
      */
     setHashParam: function ( param /*, value*/ ) {
         var params = this.getHashParams(),
-            newParams = {};
+            newParams = {},
+            value;
 
         if ( arguments.length > 1 ) {
-            var value = arguments[ 1 ];
+            value = arguments[ 1 ];
             newParams[ param ] = value;
         }
         else {
@@ -150,7 +148,8 @@ App.Url.extend({
      */
     getHashParams: function () {
         var hash = window.location.hash,
-            params = {};
+            params = {},
+            vars, pair, i;
 
         // Clear # and #!
         if ( hash && hash.length ) {
@@ -162,11 +161,11 @@ App.Url.extend({
             }
         }
 
-        var vars = hash.split( '&' );
+        vars = hash.split( '&' );
 
         // Build params into an object
-        for ( var i = 0; i < vars.length; i++ ) {
-            var pair = vars[ i ].split( '=' );
+        for ( i = 0; i < vars.length; i++ ) {
+            pair = vars[ i ].split( '=' );
 
             if ( pair.length > 0 && pair[ 0 ].length > 0 )
             {
@@ -199,13 +198,14 @@ App.Url.extend({
      * Get a query parameter by name
      */
     getParameterByName: function ( name ) {
+        var regexS, regex, results;
+
         name = name.replace( /[\[]/, "\\\[").replace( /[\]]/, "\\\]" );
+        regexS = "[\\?&]" + name + "=([^&#]*)";
+        regex = new RegExp( regexS );
+        results = regex.exec( window.location.search );
 
-        var regexS = "[\\?&]" + name + "=([^&#]*)",
-            regex = new RegExp( regexS ),
-            results = regex.exec( window.location.search );
-
-        return ( results == null )
+        return ( _.isNull( results ) )
             ? ""
             : decodeURIComponent( results[ 1 ].replace( /\+/g, " " ) );
     }

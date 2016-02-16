@@ -7,14 +7,14 @@ App.Langs.english = {
     cancel: 'Cancel',
     done: 'Done',
     done_exclame: 'Done!',
-    error_default: 'Sorry, there was a problem.',
-    error_request: 'Sorry, there was a problem with that request. Please refresh the page and try again.',
+    ok: 'OK',
     loading: 'Loading',
     next: 'Next',
-    ok: 'OK',
     prev: 'Prev',
     redirecting: 'Redirecting',
     save: 'Save',
     submit: 'Submit',
-    working: 'Working'
+    working: 'Working',
+    error_default: 'Sorry, there was a problem.',
+    error_request: 'Sorry, there was a problem with that request. Please refresh the page and try again.',
 };
