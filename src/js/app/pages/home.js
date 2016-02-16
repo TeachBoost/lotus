@@ -15,21 +15,21 @@ App.Pages.Home.extend({
         var self = this;
         this.base();
 
-        // defer DOM handling until after callstack is finished
+        // Defer DOM handling until after callstack is finished
         _.defer( function () {
-            // check if IE8 @todo better
-            if ( App.ie8 || App.ie7 ) {
-                HomePage.showError( App.Lang.error_bad_ie );
+            // Check for any fatal errors with the browser
+            if ( ! self.checkFatalErrors() ) {
                 return false;
             }
 
-            if ( App.ios4 || App.ios5 ) {
-                HomePage.showError( App.Lang.error_bad_ios );
-                return false;
-            }
-
-            // Initialize the page
+            // Add specific DOM classes for certain browsers
+            self.addBrowserInfoToDom();
+            // Resize for browser heights, set up modals and event handlers
+            self.browserDetect();
+            self.fontSizeEvents();
             self.init();
+            // Run integrity checks
+            App.runTests();
             // Trigger to integrity check that we're done here
             App.IC.EventTarget.fire( App.Tests.HOME_LOADED.key );
         });
@@ -41,6 +41,12 @@ App.Pages.Home.extend({
      * Initialize state
      */
     init: function () {
+        if ( this.isTouchDevice() ) {
+            $( 'body' )
+                .addClass( 'touch' )
+                .removeClass( 'notouch' );
+        }
+
         // Attach font size click events
         this.fontSizeEvents();
         // Set font size
@@ -88,34 +94,57 @@ App.Pages.Home.extend({
     setFontSize: function ( mag ) {
         var size;
 
-        //@TODO Get from storage
-        //if ( ! mag ) {
-        //    mag = App.Storage.get( App.Const.storage_font_size, true );
-        //}
+        if ( ! mag ) {
+            mag = App.Storage.get( App.Const.storage_font_mag, true );
+        }
 
         if ( ! mag ) {
             mag = 2;
         }
 
+        App.Storage.set(
+            App.Const.storage_font_mag,
+            mag,
+            true );
         size = _.findWhere( App.Config.bodySizes, { mag: mag } );
-
-        //App.Storage.set(
-        //    App.Const.storage_font_size,
-        //    size,
-        //    true );
         $( 'body' ).removeClass( 'x1 x2 x3 x4 x5' )
             .addClass( 'x' + mag );
         $( '#toggle-zoom' ).find( '.size' )
             .data( 'pt', size.pt )
             .data( 'mag', size.mag )
             .text( size.pt + ' pt' );
+        $( window ).trigger( 'resize' );
+    },
+
+    /**
+     * Add browser class to the DOM.
+     */
+    browserDetect: function ( ) {
+        switch ( App.browser.name ) {
+            case "chrome":
+                $( 'html' ).addClass( 'webkit' );
+                break;
+            case "safari":
+                $( 'html' ).addClass( 'safari' );
+                break;
+            case "firefox":
+                $( 'html' ).addClass( 'firefox' );
+                break;
+            case "msedge":
+            case "msie":
+                $( 'html' ).addClass( 'ie' );
+                break;
+            case "opera":
+                $( 'html' ).addClass( 'opera' );
+                break;
+        }
     },
 
     /**
      * Check if we're touch-enabled
      */
     isTouchDevice: function () {
-        return App.iPad;
+        return App.browser.mobile;
     },
 
     /**
@@ -130,11 +159,12 @@ App.Pages.Home.extend({
             return false;
         }
 
-        // configure user info
+        // Configure user info
+        // @TODO bring in Storage library
         $zopim.livechat.setName( App.Storage.get( App.Const.storage_user_name ) );
         $zopim.livechat.setEmail( App.Storage.get( App.Const.storage_user_email ) );
 
-        // attach click event handler
+        // Attach click event handler
         $( '#live-chat' ).on( 'click', function () {
             $zopim.livechat.window.show();
         });
@@ -145,11 +175,79 @@ App.Pages.Home.extend({
     },
 
     /**
+     * Performs tests if the user's browser is okay to continue.
+     */
+    checkFatalErrors: function () {
+        // Check for localstorage
+        if ( ! Modernizr.localstorage ) {
+            this.showError( App.Lang.error_no_localstorage );
+            return false;
+        }
+
+        // Check for an unsupported browser.
+        if ( ! App.browserOkay() ) {
+            this.showError( this.getBadBrowserMessage() );
+            return false;
+        }
+
+        return true;
+    },
+
+    getBadBrowserMessage: function () {
+        var browserMsg, updateUrl;
+
+        // First get the start of the message and the update URL
+        if ( App.browser.msie || App.browser.msedge ) {
+            browserMsg = App.Lang.error_bad_ie;
+            updateUrl = "http://windows.microsoft.com/en-us/internet-explorer/download-ie";
+        }
+        else if ( App.browser.ipad || App.browser.iphone ) {
+            browserMsg = App.Lang.error_bad_ios;
+            updateUrl = "https://support.apple.com/en-us/HT204204";
+        }
+        else if ( App.browser.chrome ) {
+            browserMsg = App.Lang.error_bad_chrome;
+            updateUrl = "https://www.google.com/chrome/";
+        }
+        else if ( App.browser.safari ) {
+            browserMsg = App.Lang.error_bad_safari;
+            updateUrl = "https://www.apple.com/safari/";
+        }
+        else if ( App.browser.firefox ) {
+            browserMsg = App.Lang.error_bad_firefox;
+            updateUrl = "https://firefox.com";
+        }
+        else {
+            browserMsg = App.Lang.error_bad_browser;
+        }
+
+        // If we have a RL add one.
+        if ( updateUrl ) {
+            browserMsg +=
+                '<br><br><center><i class="fa fa-download top-3 relative-position right-margin-5"></i>&nbsp;' +
+                '<a class="underline" href="' + updateUrl + '" target="_blank">Upgrade your browser here</a></center>';
+        }
+
+        return browserMsg;
+    },
+
+    addBrowserInfoToDom: function () {
+        if ( App.browser.msie ) {
+            if ( App.browser.versionNumber == 10 ) {
+                $( 'html' ).addClass( 'ie10' );
+            }
+            else if ( App.browser.versionNumber == 11 ) {
+                $( 'html' ).addClass( 'ie11' );
+            }
+        }
+    },
+
+    /**
      * Display an error page
      */
     showError: function ( message ) {
-        HomePage.allowUnload = true;
-        IC.Done();
+        App.Pages.Home.allowUnload = true;
+        App.IC.Done();
         $( '#app-error-overlay' )
             .find( 'span' )
             .html( message );
@@ -166,5 +264,4 @@ App.Pages.Home.extend({
     unlockScreen: function () {
         $( '#app-lock-overlay' ).fadeOut( 'fast' );
     }
-
 });

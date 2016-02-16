@@ -20,6 +20,36 @@ if ( ! window.console ) {
     };
 }
 
+// Create master error handler
+window.onerror = function ( msg, url, line, col, error ) {
+    var suppressErrorAlert = false,
+        extra, fullString;
+
+    extra = ! col ? '' : '\ncolumn: ' + col;
+    extra += ! error ? '' : '\nerror: ' + error;
+    fullString = msg + "\nurl: " + url + "\nline: " + line + extra;
+
+    // Note that col & error are new to the HTML 5 spec and may
+    // not be supported in every browser.
+    App.errorLog.push({
+        url: url,
+        line: line,
+        message: msg,
+        string: fullString,
+        col: col ? col : '',
+        error: error ? error : '',
+    });
+
+    // Log in google analytics
+    if ( typeof ga != 'undefined' ) {
+        ga( 'send', 'event', 'JS Error', 'sketch', fullString );
+    }
+
+    // If you return true, then error alerts (like in older versions of
+    // Internet Explorer) will be suppressed.
+    return suppressErrorAlert;
+};
+
 // Base class
 // Version 1.1
 // Copyright 2006-2010, Dean Edwards
@@ -249,48 +279,70 @@ App.EventTarget = ( function () {
  */
 App.extend({
     // Application variables
-    benchTime: {},
-    env: 'development',
-    icConsole: 'system-console',
-    icEvent: 'system-event',
-    icOverlay: 'system-overlay',
-    language: 'english',
-    languages: {
-        english: 'english'
-    },
-    loadCallback: null,
-    loadComplete: false,
-    readyQueue: [],
-    readySysQueue: [],
+    page: null,
     rootPath: '',
+    errorLog: [],
     version: null,
+    benchTime: {},
     working: false,
+    readyQueue: [],
     workingDelay: 0,
     srcPath: './src/',
-    // Browser info
-    iPad: false,
-    ie7: false,
-    ie8: false,
-    ios4: false,
-    ios5: false,
-    ios6: false,
-    ios7: false,
-    ios8: false,
+    readySysQueue: [],
+    browser: {
+        name: '',
+        mac: false,
+        win: false,
+        msie: false,
+        ipad: false,
+        linux: false,
+        opera: false,
+        mobile: false,
+        iphone: false,
+        chrome: false,
+        webkit: false,
+        safari: false,
+        msedge: false,
+        mobile: false,
+        firefox: false,
+        desktop: false
+    },
+    loadCallback: null,
+    env: 'development',
+    loadComplete: false,
+    language: 'english',
+        languages: {
+        english: 'english'
+    },
+    browserRequirements: {
+        msie: 9,
+        opera: 4,
+        safari: 6,
+        msedge: 0,
+        chrome: 28,
+        firefox: 27
+    },
+    icOnError: null,
+    icEvent: 'system-event',
+    browserIsSupported: true,
+    icOverlay: 'system-overlay',
+    icConsole: 'system-console',
     // System configs
-    Config: {},
-    Const: {},
     Lang: {},
+    Const: {},
+    Config: {},
     Langs: {
         english: {}
     },
     // System classes
-    Log: new Base(),
-    Message: new Base(),
-    Notify: new Base(),
-    Request: new Base(),
-    Text: new Base(),
-    Url: new Base(),
     Pages: {},
+    Url: new Base(),
+    Log: new Base(),
+    Text: new Base(),
+    Notify: new Base(),
+    Message: new Base(),
+    Request: new Base(),
+    Storage: new Base(),
     // Integrity Tests
     Tests: [],
 
@@ -355,8 +407,7 @@ App.extend({
     },
 
     /**
-     * Benchmarking utility. This tracks execution time for a given
-     * key.
+     * Benchmarking utility. This tracks execution time for a given key.
      */
     benchmark: function ( /* key, destroy */ ) {
         var key = ( arguments.length >= 1 ) ? 'sys' : arguments[ 0 ],
@@ -392,8 +443,8 @@ App.extend({
      * Initialize the application based on environment.
      */
     init: function ( callback ) {
-        var self = this,
-            ua;
+        var self = this;
+
         // Start logger
         this.debug( '[sys ' + this.benchmark() + '] Initialising application' );
 
@@ -401,27 +452,15 @@ App.extend({
             this.loadCallback = callback;
         }
 
-        // Browser checking
-        ua = ( ! _.isUndefined( navigator ) && _.has( navigator, 'userAgent' ) )
-            ? navigator.userAgent
-            : '';
-        this.iPad = /iPad/i.test( ua );
-
-        if ( this.iPad ) {
-            this.ios4 = /CPU OS 4_/i.test( ua );
-            this.ios5 = /CPU OS 5_/i.test( ua );
-            this.ios6 = /CPU OS 6_/i.test( ua );
-            this.ios7 = /CPU OS 7_/i.test( ua );
-            this.ios8 = /CPU OS 8_/i.test( ua );
-        }
-
         // Initialise the system libraries
         this.initClasses();
+
+        // Check for browser compatibility
+        this.checkBrowser();
 
         // Set up Integrity Check system
         this.integrityCheck();
         this.registerTests();
-        this.runTests();
 
         // Initialise any registered app libraries
         for ( i in this.readySysQueue ) {
@@ -440,6 +479,7 @@ App.extend({
         this.Message.init();
         this.Notify.init();
         this.Request.init();
+        this.Storage.init();
         this.Url.init();
 
         // Set up working dialog if enabled
@@ -451,15 +491,15 @@ App.extend({
         $( document ).ready( _.defer( function () {
             self.loadCallback();
             self.loadComplete = true;
+            self.setTestTimeouts();
 
             for ( i in self.readyQueue ) {
                 self.readyQueue[ i ]();
                 delete self.readyQueue[ i ];
             }
 
-            // Destroy 'sys' using second param
             self.debug(
-                '[sys ' + self.benchmark( 'sys', true ) +
+                '[sys ' + self.benchmark( 'sys' ) +
                 '] Document ready complete' );
         }));
 
@@ -472,19 +512,19 @@ App.extend({
     initClasses: function () {
         // Config
         this.Config = _.extend( this.Config, {
-            log_level: 4,                  // integer, 0-4 with 0 being none
-            prod_log_level: 1,             // 1 for just errors, 0 for none
-            message_center_alert: false,   // bool
-            message_alert_top: '25%',      // string
-            message_center_confirm: false, // bool
-            message_confirm_top: '25%'     // string
+            log_level: 4,                 // integer, 0-4 with 0 being none
+            prod_log_level: 1,            // 1 for just errors, 0 for none
+            message_alert_top: '25%',     // string
+            message_center_alert: false,  // bool
+            message_center_alert: false,  // bool
+            message_center_confirm: false // bool
         });
 
         // Constants
         this.Const = _.extend( this.Const, {
+            info: 'info',
             error: 'error',
-            success: 'success',
-            info: 'info'
+            success: 'success'
         });
 
         // Language
@@ -516,15 +556,15 @@ App.extend({
     integrityCheck: function () {
         var self = this;
         this.IC = {
-            EventTarget: new self.EventTarget(),
-            Console: document.getElementById( self.icConsole ),
-            Event: document.getElementById( self.icEvent ),
-            Overlay: document.getElementById( self.icOverlay ),
-            Complete: false,
-            ListenSuccess: 0,
-            ListenTotal: 0,
             EvDone: {},
+            ListenTotal: 0,
+            Complete: false,
             ListenErrors: {},
+            ListenSuccess: 0,
+            EventTarget: new self.EventTarget(),
+            Event: document.getElementById( self.icEvent ),
+            Console: document.getElementById( self.icConsole ),
+            Overlay: document.getElementById( self.icOverlay ),
             Listen: function ( e ) {
                 App.IC.ListenSuccess++;
                 App.IC.EvDone[ e.type ] = true;
@@ -544,10 +584,13 @@ App.extend({
                     App.Message.unsetWorking();
                 }, App.workingDelay );
                 App.IC.Complete = true;
+                App.debug(
+                    '[sys ' + App.benchmark( 'sys' ) +
+                    '] IC Tests complete' );
             },
             // Timeout functions for error handling and message display
             Timeout: {
-                // first check, display running message
+                // First check, display running message
                 running: function () {
                     if ( App.IC.Complete ) {
                         return;
@@ -557,7 +600,7 @@ App.extend({
                         "info",
                         true );
                 },
-                // second check, something could be wrong
+                // Second check, something could be wrong
                 warning: function () {
                     if ( App.IC.Complete ) {
                         return;
@@ -567,11 +610,15 @@ App.extend({
                         "warn",
                         false );
                 },
-                // third check, display error. One of the triggers
+                // Third check, display error. One of the triggers
                 // must not have fired.
                 error: function () {
                     if ( App.IC.Complete ) {
                         return;
+                    }
+                    // Trigger any callbacks for when the app fails to load
+                    if ( _.isFunction ( App.icOnError ) ) {
+                        App.icOnError();
                     }
                     // Check if any of the boot events failed
                     for ( i in App.IC.ListenErrors ) {
@@ -620,8 +667,7 @@ App.extend({
     /**
      * Set up test timeouts
      */
-    runTests: function () {
-        this.IC.RunTests();
+    setTestTimeouts: function () {
         // In 5 seconds put up a message that we're running tests
         setTimeout( this.IC.Timeout.running, 5000 );
         // In 10 seconds let them know something could be wrong
@@ -629,6 +675,13 @@ App.extend({
         // In 20 seconds we can assume the tests should have run so
         // check which have not and display the appropriate errors.
         setTimeout( this.IC.Timeout.error, 20000 );
+    },
+
+    /**
+     * Wrapper for the test runner. Called from app.
+     */
+    runTests: function () {
+        this.IC.RunTests();
     },
 
     /**
@@ -676,5 +729,23 @@ App.extend({
                 App.Templates[ App.srcPath + 'html/views/' + path + '.html' ]( response.data );
                 callback( response.data );
             });
+    },
+
+    /**
+     * Checks if the browser is supported
+     */
+    checkBrowser: function () {
+        var min;
+
+        this.browser = _.extend( this.browser, $.browser );
+        min = ( _.has( this.browserRequirements, this.browser.name ) )
+            ? this.browserRequirements[ this.browser.name ]
+            : 0;
+
+        this.browserIsSupported = ( this.browser.versionNumber > min );
+    },
+
+    browserOkay: function () {
+        return this.browserIsSupported;
     }
 });

@@ -1,0 +1,8 @@
+{
+    "cdn_path": "",
+    "api_path": ".",
+    "root_path": ".",
+    "asset_path": ".",
+    "chat_enabled": false,
+    "use_asset_version": false
+}
