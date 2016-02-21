@@ -515,7 +515,7 @@ App.extend({
             log_level: 4,                 // integer, 0-4 with 0 being none
             prod_log_level: 1,            // 1 for just errors, 0 for none
             message_alert_top: '25%',     // string
-            message_center_alert: false,  // bool
+            message_confirm_top: '25%',   // string
             message_center_alert: false,  // bool
             message_center_confirm: false // bool
         });
